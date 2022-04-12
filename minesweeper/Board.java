@@ -32,8 +32,8 @@ public class Board extends JPanel {
     private final int N_ROWS = 16;
     private final int N_COLS = 16;
 
-    private final int BOARD_WIDTH = N_COLS * CELL_SIZE + 1;
-    private final int BOARD_HEIGHT = N_ROWS * CELL_SIZE + 1;
+    private final int BOARD_WIDTH = N_COLS * CELL_SIZE ;
+    private final int BOARD_HEIGHT = N_ROWS * CELL_SIZE;
 
     private int[] field;
     private boolean inGame;
@@ -77,13 +77,13 @@ public class Board extends JPanel {
         for (int i = 0; i < allCells; i++) {
 
             field[i] = COVER_FOR_CELL;
-        }
+        }//These lines set up the mine field. Every cell is covered by default.
 
         status.setText(Integer.toString(minesLeft));
 
         int i = 0;
 
-        while (i < N_MINES) {
+        while (i < N_MINES) {  //In the while cycle we randomly position all mines in the field.
 
             int position = (int) (allCells * random.nextDouble());
 
@@ -170,7 +170,7 @@ public class Board extends JPanel {
                 }
             }
 
-            cell = j - 1;
+            cell = j - 1;// In this code, we check the cell that is located to the left to an empty cell in question. If it is not empty, it is uncovered. If it is empty, we repeat the whole process by recursively calling the find_empty_cells() method.
             if (cell >= 0) {
                 if (field[cell] > MINE_CELL) {
                     field[cell] -= COVER_FOR_CELL;
@@ -261,7 +261,7 @@ public class Board extends JPanel {
                     inGame = false;
                 }
 
-                if (!inGame) {
+                if (!inGame) { //If the game is over and we lost, we show all uncovered mines if any and show all wrongly marked cells if any.
 
                     if (cell == COVERED_MINE_CELL) {
                         cell = DRAW_MINE;
@@ -284,11 +284,11 @@ public class Board extends JPanel {
                 }
 
                 g.drawImage(img[cell], (j * CELL_SIZE),
-                        (i * CELL_SIZE), this);
+                        (i * CELL_SIZE), this);//This code line draws every cell on the window.
             }
         }
 
-        if (uncover == 0 && inGame) {
+        if (uncover == 0 && inGame) {//If there is nothing left to uncover, we win. If the inGame variable was set to false, we have lost.
 
             inGame = false;
             status.setText("You won!");
@@ -303,10 +303,10 @@ public class Board extends JPanel {
         @Override
         public void mousePressed(MouseEvent e) {
 
-            int x = e.getX();
+            int x = e.getX();//We determine the x and y coordinates of the mouse pointer.
             int y = e.getY();
 
-            int cCol = x / CELL_SIZE;
+            int cCol = x / CELL_SIZE;//We compute the corresponding column and row of the mine field.
             int cRow = y / CELL_SIZE;
 
             boolean doRepaint = false;
@@ -317,9 +317,9 @@ public class Board extends JPanel {
                 repaint();
             }
 
-            if ((x < N_COLS * CELL_SIZE) && (y < N_ROWS * CELL_SIZE)) {
+            if ((x < N_COLS * CELL_SIZE) && (y < N_ROWS * CELL_SIZE)) {//We check that we are located in the area of the mine field.
 
-                if (e.getButton() == MouseEvent.BUTTON3) {
+                if (e.getButton() == MouseEvent.BUTTON3) { //The uncovering of the mines is done with the right mouse button.
 
                     if (field[(cRow * N_COLS) + cCol] > MINE_CELL) {
 
@@ -328,7 +328,7 @@ public class Board extends JPanel {
                         if (field[(cRow * N_COLS) + cCol] <= COVERED_MINE_CELL) {
 
                             if (minesLeft > 0) {
-                                field[(cRow * N_COLS) + cCol] += MARK_FOR_CELL;
+                                field[(cRow * N_COLS) + cCol] += MARK_FOR_CELL;//If we right click on an unmarked cell, we add MARK_FOR_CELL to the number representing the cell. This leads to drawing a covered cell with a mark in the paintComponent() method.
                                 minesLeft--;
                                 String msg = Integer.toString(minesLeft);
                                 status.setText(msg);
@@ -337,7 +337,7 @@ public class Board extends JPanel {
                             }
                         } else {
 
-                            field[(cRow * N_COLS) + cCol] -= MARK_FOR_CELL;
+                            field[(cRow * N_COLS) + cCol] -= MARK_FOR_CELL;//If we left click on a cell that has been already marked, we remove the mark and increase the number of cells to be marked.
                             minesLeft++;
                             String msg = Integer.toString(minesLeft);
                             status.setText(msg);
@@ -346,7 +346,7 @@ public class Board extends JPanel {
 
                 } else {
 
-                    if (field[(cRow * N_COLS) + cCol] > COVERED_MINE_CELL) {
+                    if (field[(cRow * N_COLS) + cCol] > COVERED_MINE_CELL) {//Nothing happens if we click on the covered and marked cell. It must by first uncovered by another right click and only then it is possible to left click on it.
 
                         return;
                     }
@@ -354,10 +354,10 @@ public class Board extends JPanel {
                     if ((field[(cRow * N_COLS) + cCol] > MINE_CELL)
                             && (field[(cRow * N_COLS) + cCol] < MARKED_MINE_CELL)) {
 
-                        field[(cRow * N_COLS) + cCol] -= COVER_FOR_CELL;
+                        field[(cRow * N_COLS) + cCol] -= COVER_FOR_CELL;// A left click removes a cover from the cell.
                         doRepaint = true;
 
-                        if (field[(cRow * N_COLS) + cCol] == MINE_CELL) {
+                        if (field[(cRow * N_COLS) + cCol] == MINE_CELL) {//In case we left clicked on a mine, the game is over. If we left click on an empty cell, we call the find_empty_cells() method which recursively finds all adjacent empty cells.
                             inGame = false;
                         }
 
@@ -367,7 +367,7 @@ public class Board extends JPanel {
                     }
                 }
 
-                if (doRepaint) {
+                if (doRepaint) {//If the board needs to be repainted (for instance a mark was set or removed), we call the repaint() method.
                     repaint();
                 }
             }
